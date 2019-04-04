@@ -1,7 +1,5 @@
 vpath %.cpp src/
 vpath %.h include/
-vpath server bin/
-vpath client bin/
 
 .PHONY: all clean test
 
