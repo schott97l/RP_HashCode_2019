@@ -1,7 +1,7 @@
 vpath %.cpp src/
 vpath %.h include/
 
-.PHONY: all clean test
+.PHONY: all clean
 
 CC = g++ 
 CFLAGS = -g -pthread -ldl -w -std=gnu++98
@@ -39,6 +39,3 @@ Ilp.o: Ilp.cpp Ilp.h
 
 clean:
 	rm -f obj/*.o bin/* log*
-
-test:
-	./test.sh
