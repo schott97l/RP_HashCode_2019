@@ -1,12 +1,11 @@
-#include"Greedy.h"
+#include"Naive_greedy.h"
 
 using namespace std;
 
-Greedy::Greedy(int length){
-    this->length = length;
+Naive_greedy::Naive_greedy(){
 }
 
-void Greedy::solve(){
+void Naive_greedy::solve(){
 
     this->sol = Sol();
     this->sol.I = this->instance;
@@ -30,7 +29,7 @@ void Greedy::solve(){
         slides.push_back(slide);
         i++;
     } else {
-        idx = this->instance->search_closerV(this->instance->V[idx].tags,mark,idx,this->length);
+        idx = this->instance->search_closerV(this->instance->V[idx].tags,mark);
         mark[idx] = true;
         slide.p2=idx;
         slides.push_back(slide);
@@ -39,14 +38,14 @@ void Greedy::solve(){
     }
 
     for(;i<this->instance->nbphot;i++){
-        idx = this->instance->search_closer(this->instance->V[idx].tags,mark,idx,this->length);
+        idx = this->instance->search_closer(this->instance->V[idx].tags,mark);
         mark[idx] = true;
         slide.p1=idx;
         i++;
         if (this->instance->V[idx].ori = 'H'){
             slides.push_back(slide);
         } else {
-            idx = this->instance->search_closerV(this->instance->V[idx].tags,mark,idx,this->length);
+            idx = this->instance->search_closerV(this->instance->V[idx].tags,mark);
             mark[idx] = true;
             slide.p2=idx;
             slides.push_back(slide);

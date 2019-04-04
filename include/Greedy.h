@@ -5,7 +5,8 @@
 
 class Greedy : public Solver{
     public:
-        Greedy();
+        int length;
+        Greedy(int length);
         void solve();
 };
 

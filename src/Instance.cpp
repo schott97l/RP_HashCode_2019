@@ -3,7 +3,7 @@
 #include<sstream>
 #include<fstream>
 #include<iomanip>
-#include<stdlib.h>
+#include<cstdlib>
 #include <vector>
 
 void aff_list(list<string>&l){
@@ -142,7 +142,7 @@ void Instance::aff(ostream &o){
 
 int Instance::search_closer(list<string>&l, vector<bool> &mark){
     int i, max,val,maxi;
-    max=-1;maxi=-1;
+    max=-1;maxi=0;
     for (i=0;i<nbphot;i++){
         if (!(mark[i])){
             val=eval_slide(l,V[i].tags);
@@ -155,9 +155,26 @@ int Instance::search_closer(list<string>&l, vector<bool> &mark){
     return maxi;
 }
 
+int Instance::search_closer(list<string>&l, vector<bool> &mark, int start, int length){
+    int i,max,val,maxi,idx;
+    max=-1;maxi=0;
+    int end = start+min(nbphot,length);
+    for (i=start;i<end;i++){
+        idx = i%nbphot;
+        if (!(mark[idx])){
+            val=eval_slide(l,V[idx].tags);
+            if (max<val){
+                max=val;
+                maxi=idx;
+            }
+        }
+    }
+    return maxi;
+}
+
 int Instance::search_closerV(list<string>&l, vector<bool> &mark){
     int i, max,val,maxi;
-    max=-1;maxi=-1;
+    max=-1;maxi=0;
     for (i=0;i<nbphot;i++){
         if ((!(mark[i]))&&(V[i].ori=='V')){
             val=eval_slide(l,V[i].tags);
@@ -169,6 +186,24 @@ int Instance::search_closerV(list<string>&l, vector<bool> &mark){
     }
     return maxi;
 }
+
+int Instance::search_closerV(list<string>&l, vector<bool> &mark, int start, int length){
+    int i,max,val,maxi,idx;
+    max=-1;maxi=0;
+    int end = start+min(nbphot,length);
+    for (i=start;i<end;i++){
+        idx=i%nbphot;
+        if ((!(mark[idx]))&&(V[idx].ori=='V')){
+            val=eval_slide(l,V[idx].tags);
+            if (max<val){
+                max=val;
+                maxi=idx;
+            }
+        }
+    }
+    return maxi;
+}
+
 
 
 //////////////////////////////////////////

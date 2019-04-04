@@ -24,7 +24,9 @@ class Instance{
   void sort_tags();
 
   int search_closer(list<string>&l,vector<bool> &mark);
+  int search_closer(list<string>&l,vector<bool> &mark,int start, int length);
   int search_closerV(list<string>&l,vector<bool> &mark);
+  int search_closerV(list<string>&l,vector<bool> &mark,int start, int length);
  
 };
 
