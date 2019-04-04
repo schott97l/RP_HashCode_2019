@@ -1,11 +1,11 @@
-#include"Hori_verti.h"
+#include"Ilp.h"
 
 using namespace std;
 
-Hori_verti::Hori_verti(){
+Ilp::Ilp(){
 }
 
-void Hori_verti::solve(){
+void Ilp::solve(){
 
     this->sol = Sol();
     this->sol.I = this->instance;

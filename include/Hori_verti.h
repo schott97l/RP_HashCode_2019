@@ -1,25 +1,12 @@
 #ifndef __HORI_VERTI_H__
 #define __HORI_VERTI_H__
 
-#include<iostream>
-#include<fstream>
-#include<string>
-#include<list>
-#include<vector>
-#include<stdlib.h>
-#include"Instance.h"
+#include"Solver.h"
 
-using namespace std;
-
-class Hori_verti{
+class Hori_verti : public Solver{
     public:
-        Instance * instance;
-        Sol sol;
-
-        Hori_verti(Instance *instance);
+        Hori_verti();
         void solve();
-        void save(ostream &o);
-        double eval();
 };
 
 #endif

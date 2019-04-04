@@ -1,11 +1,11 @@
-#include"Hori_verti.h"
+#include"Genetic.h"
 
 using namespace std;
 
-Hori_verti::Hori_verti(){
+Genetic::Genetic(){
 }
 
-void Hori_verti::solve(){
+void Genetic::solve(){
 
     this->sol = Sol();
     this->sol.I = this->instance;

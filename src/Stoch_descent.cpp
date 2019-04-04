@@ -1,11 +1,11 @@
-#include"Hori_verti.h"
+#include"Stoch_descent.h"
 
 using namespace std;
 
-Hori_verti::Hori_verti(){
+Stoch_descent::Stoch_descent(){
 }
 
-void Hori_verti::solve(){
+void Stoch_descent::solve(){
 
     this->sol = Sol();
     this->sol.I = this->instance;

@@ -1,11 +1,11 @@
-#include"Hori_verti.h"
+#include"Greedy.h"
 
 using namespace std;
 
-Hori_verti::Hori_verti(){
+Greedy::Greedy(){
 }
 
-void Hori_verti::solve(){
+void Greedy::solve(){
 
     this->sol = Sol();
     this->sol.I = this->instance;
