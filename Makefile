@@ -9,19 +9,15 @@ O_REP = obj/
 B_REP = bin/
 L_REP = lib/
 
-REP = rep
-CHECKER = Checker
-SLIDESHOW = Slideshow
+all: rep Checker Slideshow
 
-all: $(REP) $(CHECKER) $(SLIDESHOW)
-
-$(REP):
+rep:
 	if [ ! -d obj ]; then  mkdir obj; fi; if [ ! -d bin ]; then mkdir bin; fi;
 
-$(CHECKER): Checker.o Instance.o
+Checker: Checker.o Instance.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
 
-$(SLIDESHOW): Slideshow.o Instance.o Solver.o Hori_verti.o Greedy.o Stoch_descent.o Genetic.o Ilp.o
+Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Greedy.o Stoch_descent.o Genetic.o Ilp.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
 
 Checker.o: Checker.cpp Instance.h
