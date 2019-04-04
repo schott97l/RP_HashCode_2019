@@ -34,4 +34,4 @@ Ilp.o: Ilp.cpp Ilp.h
 	$(CC) -c $< -I include $(CFLAGS) -o $(O_REP)$@
 
 clean:
-	rm -f obj/*.o bin/* log*
+	rm -f obj/*.o bin/* log* vgcore*
