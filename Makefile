@@ -3,6 +3,9 @@ vpath %.h include/
 
 .PHONY: all clean
 
+SRCS := $(wildcard src/*.cpp)
+OBJS := $(addprefix obj/,$(notdir $(SRCS:.S=.o)))
+
 CC = g++ 
 CFLAGS = -g -pthread -ldl -w -std=gnu++98
 O_REP = obj/
@@ -19,6 +22,9 @@ Checker: Checker.o Instance.o
 
 Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o Stoch_descent.o Genetic.o Ilp.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
+
+obj/%.o: sources/%.S
+$(CC) $(CFLAGS) -o $@ $< $(INCLUDES)
 
 Checker.o: Checker.cpp Instance.h
 Slideshow.o: Slideshow.cpp Instance.h
