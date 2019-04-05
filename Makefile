@@ -10,7 +10,6 @@ CC = g++
 CFLAGS = -g -pthread -ldl -w -std=gnu++98
 O_REP = obj/
 B_REP = bin/
-L_REP = lib/
 
 all: rep Checker Slideshow
 
@@ -24,18 +23,7 @@ Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o 
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
 
 obj/%.o: sources/%.S
-$(CC) $(CFLAGS) -o $@ $< $(INCLUDES)
-
-Checker.o: Checker.cpp Instance.h
-Slideshow.o: Slideshow.cpp Instance.h
-Instance.o: Instance.cpp Instance.h
-Solver.o: Solver.cpp Solver.h
-Hori_verti.o: Hori_verti.cpp Hori_verti.h
-Naive_greedy.o: Naive_greedy.cpp Naive_greedy.h
-Greedy.o: Greedy.cpp Greedy.h
-Stoch_descent.o: Stoch_descent.cpp Stoch_descent.h
-Genetic.o: Genetic.cpp Genetic.h
-Ilp.o: Ilp.cpp Ilp.h
+	$(CC) $(CFLAGS) -o $@ $< $(INCLUDES)
 
 %.o: %.cpp
 	$(CC) -c $< -I include $(CFLAGS) -o $(O_REP)$@
