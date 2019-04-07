@@ -282,12 +282,46 @@ double Sol::eval(){
         }
 
         val=val+eval_slide(*l1,*l2);
-
-
     }
 
     return val;
 
 }
 
+void Sol::swap_slides(int idx1, int idx2){
+    Slide tmp;
+    tmp = this->vsol[idx1];
+    this->vsol[idx1] = this->vsol[idx2];
+    this->vsol[idx2] = tmp;
+}
 
+void Sol::swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2){
+    int tmp;
+    if(photo_idx1==1){
+        tmp = this->vsol[idx1].p1;
+        if(photo_idx2==1){
+            this->vsol[idx1].p1 = this->vsol[idx2].p1;
+            this->vsol[idx2].p1 = tmp;
+        }else{
+            this->vsol[idx1].p1 = this->vsol[idx2].p2;
+            this->vsol[idx2].p2 = tmp;
+        }
+    }else{
+        tmp = this->vsol[idx1].p2;
+        if(photo_idx2==1){
+            this->vsol[idx1].p2 = this->vsol[idx2].p1;
+            this->vsol[idx2].p1 = tmp;
+        }else{
+            this->vsol[idx1].p2 = this->vsol[idx2].p2;
+            this->vsol[idx2].p2 = tmp;
+        }
+    }
+}
+
+Sol * Sol::deep_copy(){
+    Sol * sol = new Sol();
+    sol->I = this->I;
+    sol->nbslides = this->nbslides;
+    sol->vsol = this->vsol;
+    return sol;
+}

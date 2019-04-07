@@ -28,7 +28,7 @@ int main(int argc,char**argv){
     namesol=argv[3];
 
     ifstream fic(nameext.c_str());
-    if (fic==NULL){
+    if (fic.fail()){
         cerr<<"file "<<nameext<<" "<<" not found"<<endl;
         return 1;
     }
@@ -40,7 +40,7 @@ int main(int argc,char**argv){
     cout<<endl<<endl;
 
     ifstream fic2(namesol.c_str());
-    if (fic2==NULL){
+    if (fic2.fail()){
         cerr<<"file "<<namesol<<" "<<" not found"<<endl;
         return 1;
     }

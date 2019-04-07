@@ -6,7 +6,7 @@
 class Genetic : public Solver{
     public:
         Genetic();
-        void solve();
+        Sol *  solve();
 };
 
 #endif

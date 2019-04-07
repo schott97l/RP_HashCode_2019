@@ -6,7 +6,7 @@
 class Hori_verti : public Solver{
     public:
         Hori_verti();
-        void solve();
+        Sol * solve();
 };
 
 #endif

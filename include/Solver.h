@@ -12,12 +12,13 @@
 
 class Solver{
     public:
-        Instance * instance;
-        Sol sol;
+        Instance * instance=NULL;
+        Sol * sol=NULL;
 
         Solver();
         void load(Instance *instance);
-        virtual void solve()=0;
+        void load(Instance *instance, Sol *sol);
+        virtual Sol * solve()=0;
         void save(ostream &o);
         double eval();
 };

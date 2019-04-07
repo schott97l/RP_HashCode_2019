@@ -7,7 +7,7 @@ SRCS := $(wildcard src/*.cpp)
 OBJS := $(addprefix obj/,$(notdir $(SRCS:.S=.o)))
 
 CC = g++ 
-CFLAGS = -g -pthread -ldl -w -std=gnu++98
+CFLAGS = -g -pthread -ldl -w -o3 -std=gnu++11
 O_REP = obj/
 B_REP = bin/
 

@@ -13,15 +13,18 @@ using namespace std;
 typedef struct {
     bool help;
     int length;
+    int nb_iter;
+    int nb_neigh;
+    string input_sol;
 } args_t;
 
 void usage(char * argv0){
     cerr<<"usage: "<<argv0<<" <solver instance percent solution> [options]"<<endl;
     cerr<<"    Solver in [ hori_verti | naive_greedy | greedy | stoch_descent | genetic | ilp ]"<<endl;
     cerr<<"    Instance file of the Google Hash Code PhotoSlideShow (*.txt)"<<endl;
-    cerr<<"    Percent of the nuber of photo to be read"<<endl;
-    cerr<<"    Solution file to check"<<endl;
-    cerr<<"    [ -l <length> -h ]"<<endl;
+    cerr<<"    Percent of the instance to be read"<<endl;
+    cerr<<"    Output solution"<<endl;
+    cerr<<"    [ -l <length> -s <input solution> -h ]"<<endl;
 }
 
 
@@ -29,10 +32,13 @@ args_t arg_parse(int argc, char * argv[]){
     args_t args;
     args.help = false;
     args.length = 1000;
+    args.input_sol = "";
+    args.nb_iter = 100;
+    args.nb_neigh = 100;
     int c_arg;
     extern char *optarg;
     extern int optind;
-    while( (c_arg = getopt(argc, argv, "hl:")) != EOF )
+    while( (c_arg = getopt(argc, argv, "hl:i:n:s:")) != EOF )
     {
         switch(c_arg)
         {
@@ -48,6 +54,28 @@ args_t arg_parse(int argc, char * argv[]){
                     fprintf(stderr,"invalide negative length");
                     exit(EXIT_FAILURE);
                 }
+                break;
+            case 'i':
+                //length
+                args.nb_iter = atoi(optarg);
+                if(args.length<0)
+                {
+                    fprintf(stderr,"invalide negative nb iter");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'n':
+                //length
+                args.nb_neigh = atoi(optarg);
+                if(args.length<0)
+                {
+                    fprintf(stderr,"invalide negative nb neighbour");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 's':
+                //input solution
+                args.input_sol=optarg;
                 break;
             case '?':
                 break;
@@ -81,19 +109,28 @@ int main(int argc, char **argv){
     name_solution=argv[optind+3];
 
     ifstream fic(name_instance.c_str());
-    if (fic==NULL){
+    if (fic.fail()){
         cerr<<"file "<<name_instance<<" "<<" not found"<<endl;
         return 1;
     }
-
     Instance I(fic,percent);
     fic.close();
     I.sort_tags();
 
     ofstream fic2(name_solution.c_str());
-    if (fic2==NULL){
+    if (fic2.fail()){
         cerr<<"file "<<name_solution<<" "<<" not found"<<endl;
         return 1;
+    }
+
+    Sol * solution=NULL;
+    if (args.input_sol.compare("")!=0){
+        ifstream fic3(args.input_sol.c_str());
+        if (fic3.fail()){
+            cerr<<"file "<<args.input_sol<<" "<<" not found"<<endl;
+            return 1;
+        }
+        solution = new Sol(&I,fic3);
     }
 
     Solver * solver= NULL;
@@ -105,7 +142,12 @@ int main(int argc, char **argv){
     else if (name_solver.compare("greedy") == 0)
         solver = new Greedy(args.length);
     else if (name_solver.compare("stoch_descent") == 0)
-        solver = new Stoch_descent;
+    {
+        if (args.input_sol.compare("")!=0)
+            solver = new Stoch_descent(args.nb_iter, args.nb_neigh);
+        else
+            solver = new Stoch_descent(args.nb_iter, args.nb_neigh, args.length);
+    }
     else if (name_solver.compare("genetic") == 0)
         solver = new Genetic;
     else if (name_solver.compare("ilp") == 0)
@@ -113,7 +155,11 @@ int main(int argc, char **argv){
     else
         solver = new Hori_verti;
 
-    solver->load(&I);
+    if (solution==NULL)
+        solver->load(&I);
+    else
+        solver->load(&I,solution);
+
     solver->solve();
     solver->save(fic2);
 

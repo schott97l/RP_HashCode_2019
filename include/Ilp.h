@@ -6,7 +6,7 @@
 class Ilp : public Solver{
     public:
         Ilp();
-        void solve();
+        Sol * solve();
 };
 
 #endif

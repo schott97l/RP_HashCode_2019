@@ -5,10 +5,10 @@ using namespace std;
 Naive_greedy::Naive_greedy(){
 }
 
-void Naive_greedy::solve(){
+Sol * Naive_greedy::solve(){
 
-    this->sol = Sol();
-    this->sol.I = this->instance;
+    this->sol = new Sol();
+    this->sol->I = this->instance;
     vector<Slide> slides;
     Slide slide;
     slide.p1=-1;
@@ -54,7 +54,8 @@ void Naive_greedy::solve(){
         }
     }
 
-    this->sol.vsol = slides;
-    this->sol.nbslides = this->sol.vsol.size();
+    this->sol->vsol = slides;
+    this->sol->nbslides = this->sol->vsol.size();
 
+    return this->sol;
 }

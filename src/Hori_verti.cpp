@@ -5,10 +5,10 @@ using namespace std;
 Hori_verti::Hori_verti(){
 }
 
-void Hori_verti::solve(){
+Sol * Hori_verti::solve(){
 
-    this->sol = Sol();
-    this->sol.I = this->instance;
+    this->sol = new Sol;
+    this->sol->I = this->instance;
     vector<Slide> hori_vector;
     vector<Slide> verti_vector;
     Slide verti_slide;
@@ -34,8 +34,9 @@ void Hori_verti::solve(){
         }
     }
 
-    this->sol.vsol = hori_vector;
-    this->sol.vsol.insert( this->sol.vsol.end(), verti_vector.begin(), verti_vector.end() );
-    this->sol.nbslides = this->sol.vsol.size();
+    this->sol->vsol = hori_vector;
+    this->sol->vsol.insert( this->sol->vsol.end(), verti_vector.begin(), verti_vector.end() );
+    this->sol->nbslides = this->sol->vsol.size();
 
+    return this->sol;
 }

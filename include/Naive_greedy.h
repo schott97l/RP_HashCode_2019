@@ -6,7 +6,7 @@
 class Naive_greedy : public Solver{
     public:
         Naive_greedy();
-        void solve();
+        Sol * solve();
 };
 
 #endif

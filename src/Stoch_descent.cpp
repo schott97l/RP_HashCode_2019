@@ -1,41 +1,104 @@
 #include"Stoch_descent.h"
+#include<tuple>
 
 using namespace std;
 
-Stoch_descent::Stoch_descent(){
+Stoch_descent::Stoch_descent(int nb_iter, int nb_neighbours,int greedy_length){
+    this->nb_iter = nb_iter;
+    this->nb_neighbours = nb_neighbours;
+    this->greedy_length = greedy_length;
 }
 
-void Stoch_descent::solve(){
+Stoch_descent::Stoch_descent(int nb_iter, int nb_neighbours){
+    this->nb_iter = nb_iter;
+    this->nb_neighbours = nb_neighbours;
+}
 
-    this->sol = Sol();
-    this->sol.I = this->instance;
-    vector<Slide> hori_vector;
-    vector<Slide> verti_vector;
-    Slide verti_slide;
-    Slide hori_slide;
-    verti_slide.p1=-1;
-    verti_slide.p2=-1;
-    hori_slide.p1=-1;
-    hori_slide.p2=-1;
+Sol * Stoch_descent::solve(){
+    int r, idx, photo_idx;
 
-    for(int i=0;i<this->instance->nbphot;i++){
-        if (this->instance->V[i].ori == 'V'){
-            if (verti_slide.p1==-1){
-                verti_slide.p1=i;
-            }else{
-                verti_slide.p2=i;
-                verti_vector.push_back(verti_slide);
-                verti_slide.p1=-1;
-                verti_slide.p2=-1;
-            }
+    if (this->sol==NULL){
+        Greedy greedy(this->greedy_length);
+        greedy.load(this->instance);
+        this->sol = greedy.solve();
+    }
+
+    srand(time(0));
+    //stoch descent
+    for (int i=0;i<this->nb_iter;i++){
+        r = rand()%2;
+        if (r==0){
+            idx = rand() % this->sol->nbslides;
+            this->sol = swap_slides_neighbour(idx);
         }else{
-            hori_slide.p1=i;
-            hori_vector.push_back(hori_slide);
+            photo_idx = rand()%2;
+            while (this->sol->vsol[idx].p2==-1){
+                idx = rand() % this->sol->nbslides;
+            }
+            this->sol = swap_verticals_neighbour(idx,photo_idx);
         }
     }
 
-    this->sol.vsol = hori_vector;
-    this->sol.vsol.insert( this->sol.vsol.end(), verti_vector.begin(), verti_vector.end() );
-    this->sol.nbslides = this->sol.vsol.size();
+    return this->sol;
+}
 
+Sol * Stoch_descent::swap_slides_neighbour(int idx1){
+    vector<tuple<int,double>> neigh_scores;
+    int argmax =-1;
+    int max = this->sol->eval();
+    int idx;
+    double score;
+    Sol * new_sol = this->sol->deep_copy();
+
+    for (int i=0;i<this->nb_neighbours;i++){
+        int idx2 = rand() % this->sol->nbslides;
+        new_sol->swap_slides(idx1,idx2);
+        neigh_scores.push_back(make_tuple(idx2,new_sol->eval()));
+        new_sol->swap_slides(idx2,idx1);
+    }
+    for(int i=0;i<this->nb_neighbours;i++){
+        score = get<1>(neigh_scores[i]);
+        if(score>max){
+            max=score;
+            argmax=get<0>(neigh_scores[i]);
+        }
+    }
+    cout << max << endl;
+    if (max>this->sol->eval())
+        this->sol->swap_slides(idx1,argmax);
+    return this->sol;
+}
+
+Sol * Stoch_descent::swap_verticals_neighbour(int idx1, int photo_idx1){
+    vector<tuple<int,int,double>> neigh_scores;
+    int argmax =-1;
+    int photo_argmax =-1;
+    double max = this->sol->eval();
+    int idx;
+    double score;
+    Sol * new_sol = this->sol->deep_copy();
+
+    for (int i=0;i<this->nb_neighbours;i++){
+        int idx2 = rand() % this->sol->nbslides;
+        int photo_idx2 = rand()%2 +1;
+        if (this->sol->vsol[idx2].p2==-1){
+            i--;
+            continue;
+        }
+        new_sol->swap_verticals(idx1,photo_idx1,idx2,photo_idx2);
+        neigh_scores.push_back(make_tuple(idx2,photo_idx2,new_sol->eval()));
+        new_sol->swap_verticals(idx2,photo_idx2,idx1,photo_idx1);
+    }
+    for(int i=0;i<neigh_scores.size();i++){
+        score = get<2>(neigh_scores[i]);
+        if(score>max){
+            max=score;
+            argmax=get<0>(neigh_scores[i]);
+            photo_argmax=get<1>(neigh_scores[i]);
+        }
+    }
+    cout << max << endl;
+    if (max>this->sol->eval())
+        this->sol->swap_verticals(idx1,photo_idx1,argmax,photo_argmax);
+    return this->sol;
 }

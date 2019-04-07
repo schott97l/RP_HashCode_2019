@@ -6,10 +6,10 @@ Greedy::Greedy(int length){
     this->length = length;
 }
 
-void Greedy::solve(){
+Sol * Greedy::solve(){
 
-    this->sol = Sol();
-    this->sol.I = this->instance;
+    this->sol = new Sol();
+    this->sol->I = this->instance;
     vector<Slide> slides;
     Slide slide;
     slide.p1=-1;
@@ -26,7 +26,7 @@ void Greedy::solve(){
     int idx = rand() % this->instance->nbphot;
     mark[idx] = true;
     slide.p1=idx;
-    if (this->instance->V[idx].ori = 'H'){
+    if (this->instance->V[idx].ori == 'H'){
         slides.push_back(slide);
         i++;
     } else {
@@ -43,7 +43,7 @@ void Greedy::solve(){
         mark[idx] = true;
         slide.p1=idx;
         i++;
-        if (this->instance->V[idx].ori = 'H'){
+        if (this->instance->V[idx].ori == 'H'){
             slides.push_back(slide);
         } else {
             idx = this->instance->search_closerV(this->instance->V[idx].tags,mark,idx,this->length);
@@ -55,7 +55,8 @@ void Greedy::solve(){
         }
     }
 
-    this->sol.vsol = slides;
-    this->sol.nbslides = this->sol.vsol.size();
+    this->sol->vsol = slides;
+    this->sol->nbslides = this->sol->vsol.size();
 
+    return this->sol;
 }
