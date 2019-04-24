@@ -19,7 +19,7 @@ rep:
 Checker: Checker.o Instance.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
 
-Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o Stoch_descent.o Genetic.o Ilp.o
+Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o Random.o Stoch_descent.o Genetic.o Ilp.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) -o $(B_REP)$@
 
 obj/%.o: sources/%.S

@@ -108,29 +108,23 @@ int main(int argc, char **argv){
     percent=atof(argv[optind+2]);
     name_solution=argv[optind+3];
 
-    ifstream fic(name_instance.c_str());
-    if (fic.fail()){
+    ifstream fic_instance(name_instance.c_str());
+    if (fic_instance.fail()){
         cerr<<"file "<<name_instance<<" "<<" not found"<<endl;
         return 1;
     }
-    Instance I(fic,percent);
-    fic.close();
+    Instance I(fic_instance,percent);
+    fic_instance.close();
     I.sort_tags();
-
-    ofstream fic2(name_solution.c_str());
-    if (fic2.fail()){
-        cerr<<"file "<<name_solution<<" "<<" not found"<<endl;
-        return 1;
-    }
-
+    
     Sol * solution=NULL;
     if (args.input_sol.compare("")!=0){
-        ifstream fic3(args.input_sol.c_str());
-        if (fic3.fail()){
+        ifstream fic_solution_in(args.input_sol.c_str());
+        if (fic_solution_in.fail()){
             cerr<<"file "<<args.input_sol<<" "<<" not found"<<endl;
             return 1;
         }
-        solution = new Sol(&I,fic3);
+        solution = new Sol(&I,fic_solution_in);
     }
 
     Solver * solver= NULL;
@@ -149,7 +143,7 @@ int main(int argc, char **argv){
             solver = new Stoch_descent(args.nb_iter, args.nb_neigh, args.length);
     }
     else if (name_solver.compare("genetic") == 0)
-        solver = new Genetic;
+        solver = new Genetic(args.nb_iter,args.nb_neigh);
     else if (name_solver.compare("ilp") == 0)
         solver = new Ilp;
     else
@@ -161,7 +155,14 @@ int main(int argc, char **argv){
         solver->load(&I,solution);
 
     solver->solve();
-    solver->save(fic2);
+
+    ofstream fic_solution_out(name_solution.c_str());
+    if (fic_solution_out.fail()){
+        cerr<<"file "<<name_solution<<" "<<" not found"<<endl;
+        return 1;
+    }
+
+    solver->save(fic_solution_out);
 
     cout << "eval : " << solver->eval() << endl;
 

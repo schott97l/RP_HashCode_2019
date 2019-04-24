@@ -7,6 +7,9 @@
 #include<list>
 #include<vector>
 #include<cstdlib>
+#include<cmath>
+#include<tuple>
+#include<algorithm>
 #include"Instance.h"
 
 

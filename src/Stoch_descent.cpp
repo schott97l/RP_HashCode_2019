@@ -1,5 +1,4 @@
 #include"Stoch_descent.h"
-#include<tuple>
 
 using namespace std;
 
