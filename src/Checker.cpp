@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 int main(int argc,char**argv){
 
     string nameext, namesol;
@@ -36,7 +35,6 @@ int main(int argc,char**argv){
     Instance I(fic,percent);
     fic.close();
 
-    I.sort_tags();
     cout<<endl<<endl;
 
     ifstream fic2(namesol.c_str());
@@ -52,5 +50,3 @@ int main(int argc,char**argv){
 
     return 0;
 }
-
-

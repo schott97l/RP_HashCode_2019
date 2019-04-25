@@ -6,37 +6,38 @@ Hori_verti::Hori_verti(){
 }
 
 Sol * Hori_verti::solve(){
+    int i;
 
-    this->sol = new Sol;
-    this->sol->I = this->instance;
-    vector<Slide> hori_vector;
-    vector<Slide> verti_vector;
-    Slide verti_slide;
-    Slide hori_slide;
-    verti_slide.p1=-1;
-    verti_slide.p2=-1;
-    hori_slide.p1=-1;
-    hori_slide.p2=-1;
+    sol = new Sol;
+    sol->I = instance;
+    Slide slide;
+    slide.p1=-1;
+    slide.p2=-1;
+    
+    cout << "hori " << instance->nb_hori << endl;
+    cout << "verti " << instance->nb_verti << endl;
 
-    for(int i=0;i<this->instance->nbphot;i++){
-        if (this->instance->V[i].ori == 'V'){
-            if (verti_slide.p1==-1){
-                verti_slide.p1=i;
-            }else{
-                verti_slide.p2=i;
-                verti_vector.push_back(verti_slide);
-                verti_slide.p1=-1;
-                verti_slide.p2=-1;
-            }
-        }else{
-            hori_slide.p1=i;
-            hori_vector.push_back(hori_slide);
-        }
+    for(i=0;i<instance->nb_hori;i++){
+        slide.p1 = instance->hori_V[i].index;
+        slide.tags =  instance->hori_V[i].tags;
+        sol->vsol.push_back(slide);
     }
+    for(i=0;i<instance->nb_verti;i++){
+        slide.p1 = instance->verti_V[i].index;
+        slide.tags =  instance->verti_V[i].tags;
+        i++;
+        slide.p2 = instance->verti_V[i].index;
+        if (i>0)
+            concat_sorted_without_double(instance->verti_V[i-1].tags,
+                    instance->verti_V[i].tags,slide.tags);
+        sol->vsol.push_back(slide);
+        for (string s : slide.tags)
+            cout << s << endl;
+    }
+    
+    sol->nb_slides = sol->vsol.size();
+    cout << "size " << sol->nb_slides << endl;
+    sol->compute_eval_vector();
 
-    this->sol->vsol = hori_vector;
-    this->sol->vsol.insert( this->sol->vsol.end(), verti_vector.begin(), verti_vector.end() );
-    this->sol->nbslides = this->sol->vsol.size();
-
-    return this->sol;
+    return sol;
 }

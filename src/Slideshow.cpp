@@ -2,11 +2,11 @@
 
 #include"Solver.h"
 #include"Hori_verti.h"
-#include"Naive_greedy.h"
-#include"Greedy.h"
-#include"Stoch_descent.h"
-#include"Genetic.h"
-#include"Ilp.h"
+//#include"Naive_greedy.h"
+//#include"Greedy.h"
+//#include"Stoch_descent.h"
+//#include"Genetic.h"
+//#include"Ilp.h"
 
 using namespace std;
 
@@ -115,7 +115,6 @@ int main(int argc, char **argv){
     }
     Instance I(fic_instance,percent);
     fic_instance.close();
-    I.sort_tags();
     
     Sol * solution=NULL;
     if (args.input_sol.compare("")!=0){
@@ -131,6 +130,7 @@ int main(int argc, char **argv){
 
     if (name_solver.compare("hori_verti") == 0)
         solver = new Hori_verti;
+    /*
     else if (name_solver.compare("naive_greedy") == 0)
         solver = new Naive_greedy;
     else if (name_solver.compare("greedy") == 0)
@@ -146,6 +146,7 @@ int main(int argc, char **argv){
         solver = new Genetic(args.nb_iter,args.nb_neigh);
     else if (name_solver.compare("ilp") == 0)
         solver = new Ilp;
+    */
     else
         solver = new Hori_verti;
 

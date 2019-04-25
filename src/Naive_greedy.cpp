@@ -7,16 +7,16 @@ Naive_greedy::Naive_greedy(){
 
 Sol * Naive_greedy::solve(){
 
-    this->sol = new Sol();
-    this->sol->I = this->instance;
+    sol = new Sol();
+    sol->I = instance;
     vector<Slide> slides;
     Slide slide;
     slide.p1=-1;
     slide.p2=-1;
 
     std::vector<bool> mark;
-    mark.resize(this->instance->nbphot);
-    for (int j=0;j<this->instance->nbphot;j++)
+    mark.resize(instance->nb_phot);
+    for (int j=0;j<instance->nb_phot;j++)
         mark[j]=false;
 
     int i = 0;
