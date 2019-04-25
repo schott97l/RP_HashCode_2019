@@ -40,13 +40,11 @@ class Sol{
   Instance *I;
   int nbslides;
   vector<Slide> vsol;
-  vector<double> veval;
 
   Sol();
   Sol(Instance *II,istream & f);
   void aff(ostream &o);
   double eval();
-  double veval();
   Sol * deep_copy();
   void swap_slides(int idx1,int idx2);
   void swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2);

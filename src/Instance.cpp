@@ -288,13 +288,6 @@ double Sol::eval(){
 
 }
 
-vector<double> Sol:veval(){
-    vector<double> veval;
-    for (i=1;i<vsol.size();i++){
-        veval.push_back(eval_slide(this->I->V[i-1].tags,this->I->V[i].tags))
-    }
-}
-
 void Sol::swap_slides(int idx1, int idx2){
     Slide tmp;
     tmp = this->vsol[idx1];
