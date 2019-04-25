@@ -33,6 +33,7 @@ class Instance{
 class Slide{
  public:
   int p1,p2;  // p2==-1 if no photo
+  list<string> tags;
 };
 
 class Sol{
@@ -40,11 +41,13 @@ class Sol{
   Instance *I;
   int nbslides;
   vector<Slide> vsol;
+  vector<int> eval_vect;
 
   Sol();
   Sol(Instance *II,istream & f);
   void aff(ostream &o);
-  double eval();
+  int eval();
+  void compute_eval_vect();
   Sol * deep_copy();
   void swap_slides(int idx1,int idx2);
   void swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2);
