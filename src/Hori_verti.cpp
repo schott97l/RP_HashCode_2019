@@ -17,6 +17,7 @@ Sol * Hori_verti::solve(){
     verti_slide.p2=-1;
     hori_slide.p1=-1;
     hori_slide.p2=-1;
+    sol->eval_vect.clear();
 
     for(int i=0;i<this->instance->nbphot;i++){
         if (this->instance->V[i].ori == 'V'){
@@ -37,6 +38,8 @@ Sol * Hori_verti::solve(){
     this->sol->vsol = hori_vector;
     this->sol->vsol.insert( this->sol->vsol.end(), verti_vector.begin(), verti_vector.end() );
     this->sol->nbslides = this->sol->vsol.size();
+
+    sol->eval();
 
     return this->sol;
 }

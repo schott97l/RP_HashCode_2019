@@ -2,13 +2,15 @@
 
 using namespace std;
 
-Genetic::Genetic(int nb_generation, int population_size){
+Genetic::Genetic(int nb_generation, int population_size, int length){
     this->nb_generation = nb_generation;
     this->population_size = population_size;
+    this->length = length;
 }
 
 Sol * Genetic::solve(){
     int i,j,argmax;
+    int random_int;
     Sol * tmp_sol;
     double max,eval;
     Sol * parent_A, * parent_B;
@@ -18,9 +20,16 @@ Sol * Genetic::solve(){
 
     Random r;
     r.load(this->instance);
+    Greedy gr(length);
+    gr.load(this->instance);
+
     
     for(j=0;j<this->population_size;j++){
-        tmp_sol = r.solve();
+        random_int = rand() % 2;
+        if (random_int==0)
+            tmp_sol = r.solve();
+        else if (random_int==1)
+            tmp_sol = gr.solve();
         this->population.push_back(tmp_sol);
     }
 
@@ -29,7 +38,7 @@ Sol * Genetic::solve(){
         max=0;
         this->evals.clear();
         for(j=0;j<this->population_size;j++){
-            eval = this->population[j]->eval();
+            eval = this->population[j]->evaluation;
             this->evals.push_back(eval);
             if(eval>max)
                 max=eval;
@@ -41,10 +50,9 @@ Sol * Genetic::solve(){
         for(j=0;j<this->population_size;j++){
             parent_A = select(this->population, this->evals);
             parent_B = select(this->population, this->evals);
-            while(parent_A==parent_B){
-                parent_B = select(this->population, this->evals);
-            }
-            new_generation.push_back(mutation(cross_over(parent_A,parent_B)));
+            tmp_sol = cross_over(parent_A,parent_B);
+            tmp_sol = mutation(tmp_sol);
+            new_generation.push_back(tmp_sol);
         }
         population.clear();
         population = new_generation;
@@ -58,9 +66,12 @@ Sol * Genetic::solve(){
             max=evals[i];
             argmax=i;
         }
+        cout << evals[i] << endl;
     }
 
-    return this->population[argmax];
+    sol = population[argmax];
+
+    return sol;
 }
 
 vector<double> Genetic::softmax(vector<double> evals){
@@ -105,10 +116,16 @@ Sol * Genetic::select(vector<Sol*> population, vector<double> evals){
 }
 
 Sol * Genetic::cross_over(Sol * parent_A, Sol * parent_B){
+    if (parent_A==parent_B)
+        return parent_A;
 
+    int k=0;
     int r = rand() % parent_A->nbslides;
+    int tmp_eval;
     Sol * child = new Sol();
     child->I = parent_A->I;
+    child->eval_vect.clear();
+    child->evaluation=0;
     Slide tmp_slide;
     tmp_slide.p1=-1;
     tmp_slide.p2=-1;
@@ -120,35 +137,61 @@ Sol * Genetic::cross_over(Sol * parent_A, Sol * parent_B){
 
     for(int i=0;i<r;i++){
         child->vsol.push_back(parent_A->vsol[i]);
+        k++;
+        tmp_eval = parent_A->eval_vect[i];
+        child->eval_vect.push_back(tmp_eval);
+        child->evaluation+=tmp_eval;
         mark[parent_A->vsol[i].p1]=true;
         if(parent_A->vsol[i].p2!=-1)
             mark[parent_A->vsol[i].p2]=true;
     }
     for(int i=0;i<parent_B->nbslides;i++){
-        if(parent_B->vsol[i].p2==-1)
-            if (mark[parent_B->vsol[i].p1]==false)
+        if(parent_B->vsol[i].p2==-1){
+            if (mark[parent_B->vsol[i].p1]==false){
                 child->vsol.push_back(parent_B->vsol[i]);
-        else if(parent_B->vsol[i].p2!=-1){
-            if (mark[parent_B->vsol[i].p1]==false && mark[parent_B->vsol[i].p2]==false)
+                tmp_eval = child->eval_transition(k-1,k);
+                child->eval_vect.push_back(tmp_eval);
+                child->evaluation += tmp_eval;
+                k++;
+                mark[parent_B->vsol[i].p1]=true;
+            }
+        } else {
+            if (mark[parent_B->vsol[i].p1]==false && mark[parent_B->vsol[i].p2]==false){
                 child->vsol.push_back(parent_B->vsol[i]);
-            else if (mark[parent_B->vsol[i].p1]==true && mark[parent_B->vsol[i].p2]==false)
-                if(tmp_slide.p1==-1)
-                    tmp_slide.p1 = mark[parent_B->vsol[i].p2];
-                else {
-                    tmp_slide.p2 = mark[parent_B->vsol[i].p2];
+                tmp_eval = child->eval_transition(k-1,k);
+                child->eval_vect.push_back(tmp_eval);
+                child->evaluation += tmp_eval;
+                k++;
+                mark[parent_B->vsol[i].p1]=true;
+                mark[parent_B->vsol[i].p2]=true;
+            } else if (mark[parent_B->vsol[i].p1]==true && mark[parent_B->vsol[i].p2]==false){
+                if(tmp_slide.p1==-1){
+                    tmp_slide.p1 = parent_B->vsol[i].p2;
+                } else {
+                    tmp_slide.p2 = parent_B->vsol[i].p2;
                     child->vsol.push_back(tmp_slide);
+                    tmp_eval = child->eval_transition(k-1,k);
+                    child->eval_vect.push_back(tmp_eval);
+                    child->evaluation += tmp_eval;
+                    k++;
                     tmp_slide.p1=-1;
                     tmp_slide.p2=-1;
                 }
-            else if (mark[parent_B->vsol[i].p1]==false && mark[parent_B->vsol[i].p2]==true)
-                if(tmp_slide.p1==-1)
-                    tmp_slide.p1 = mark[parent_B->vsol[i].p1];
-                else {
-                    tmp_slide.p2 = mark[parent_B->vsol[i].p1];
+            } else if (mark[parent_B->vsol[i].p1]==false && mark[parent_B->vsol[i].p2]==true){
+                if(tmp_slide.p1==-1){
+                    tmp_slide.p1 = parent_B->vsol[i].p1;
+                } else {
+                    tmp_slide.p2 = parent_B->vsol[i].p1;
                     child->vsol.push_back(tmp_slide);
+                    tmp_eval = child->eval_transition(k-1,k);
+                    child->eval_vect.push_back(tmp_eval);
+                    child->evaluation += tmp_eval;
+                    k++;
                     tmp_slide.p1=-1;
                     tmp_slide.p2=-1;
                 }
+                mark[parent_B->vsol[i].p1]=true;
+            }
         }
     }
     child->nbslides = child->vsol.size();

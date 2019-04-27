@@ -142,7 +142,7 @@ void Instance::aff(ostream &o){
 
 int Instance::search_closer(list<string>&l, vector<bool> &mark){
     int i, max,val,maxi;
-    max=-1;maxi=0;
+    max=-1;maxi=-1;
     for (i=0;i<nbphot;i++){
         if (!(mark[i])){
             val=eval_slide(l,V[i].tags);
@@ -157,10 +157,11 @@ int Instance::search_closer(list<string>&l, vector<bool> &mark){
 
 int Instance::search_closer(list<string>&l, vector<bool> &mark, int start, int length){
     int i,max,val,maxi,idx;
-    max=-1;maxi=0;
-    int end = start+min(nbphot,length);
-    for (i=start;i<end;i++){
-        idx = i%nbphot;
+    max=-1;maxi=-1;
+    idx=start;
+    int end = min(nbphot,length);
+    for (i=0;i<end;i++){
+        idx %= nbphot;
         if (!(mark[idx])){
             val=eval_slide(l,V[idx].tags);
             if (max<val){
@@ -168,13 +169,14 @@ int Instance::search_closer(list<string>&l, vector<bool> &mark, int start, int l
                 maxi=idx;
             }
         }
+        idx++;
     }
     return maxi;
 }
 
 int Instance::search_closerV(list<string>&l, vector<bool> &mark){
     int i, max,val,maxi;
-    max=-1;maxi=0;
+    max=-1;maxi=-1;
     for (i=0;i<nbphot;i++){
         if ((!(mark[i]))&&(V[i].ori=='V')){
             val=eval_slide(l,V[i].tags);
@@ -189,10 +191,11 @@ int Instance::search_closerV(list<string>&l, vector<bool> &mark){
 
 int Instance::search_closerV(list<string>&l, vector<bool> &mark, int start, int length){
     int i,max,val,maxi,idx;
-    max=-1;maxi=0;
-    int end = start+min(nbphot,length);
-    for (i=start;i<end;i++){
-        idx=i%nbphot;
+    max=-1;maxi=-1;
+    int end = min(nbphot,length);
+    idx=start;
+    for (i=0;i<end;i++){
+        idx %= nbphot;
         if ((!(mark[idx]))&&(V[idx].ori=='V')){
             val=eval_slide(l,V[idx].tags);
             if (max<val){
@@ -200,10 +203,10 @@ int Instance::search_closerV(list<string>&l, vector<bool> &mark, int start, int 
                 maxi=idx;
             }
         }
+        idx++;
     }
     return maxi;
 }
-
 
 
 //////////////////////////////////////////
@@ -245,10 +248,9 @@ Sol::Sol(Instance *II,istream & f){
                 exit(1);
             }
             mark[vsol[i].p2]=true;
-
         }
-
     }
+    eval();
 }
 
 
@@ -263,59 +265,119 @@ void Sol::aff(ostream &o){
 
 }
 
-double Sol::eval(){
-    int i;
-    list<string> *l1,*l2;
-    list<string> L1,L2;
-    double val=0;
+int Sol::eval_transition(int idx1, int idx2){
+    Slide s1 = vsol[idx1];
+    Slide s2 = vsol[idx2];
+    int a=0,b=0,c=0;
+    list<string>::const_iterator it1,it2;
+    list<string> tags1, tags2;
+    if (s1.p2 == -1)
+        tags1 = I->V[s1.p1].tags;
+    else
+        concat_sorted_without_double(I->V[s1.p1].tags,I->V[s1.p2].tags,tags1);
+    if (s2.p2 == -1)
+        tags2 = I->V[s2.p1].tags;
+    else
+        concat_sorted_without_double(I->V[s2.p1].tags,I->V[s2.p2].tags,tags2);
 
-    for (i=0;i<nbslides-1;i++){
-        if (vsol[i].p2==-1) l1=&(I->V[vsol[i].p1].tags);
-        else{
-            concat_sorted_without_double(I->V[vsol[i].p1].tags,I->V[vsol[i].p2].tags,L1);
-            l1=&L1;
+    it1=tags1.begin();
+    it2=tags2.begin();
+    while ((it1!=tags1.end())&&(it2!=tags2.end())){
+        if (*it1<*it2) {
+            a++;
+            it1++;
         }
-        if (vsol[i+1].p2==-1) l2=&(I->V[vsol[i+1].p1].tags);
-        else{
-            concat_sorted_without_double(I->V[vsol[i+1].p1].tags,I->V[vsol[i+1].p2].tags,L2);
-            l2=&L2;
-        }
-
-        val=val+eval_slide(*l1,*l2);
+        else
+            if (*it2<*it1){
+                c++;
+                it2++;
+            }
+            else {
+                b++;
+                it1++;
+                it2++;
+            }
     }
+    if (it1==tags1.end())
+        while (it2!=tags2.end()){
+            c++;
+            it2++;
+        }
+    if (it2==tags2.end())
+        while (it1!=tags1.end()){
+            a++;
+            it1++;
+        }
 
-    return val;
+    return min(a,b,c);
+}
 
+int Sol::eval(){
+    int i,eval,value;;
+    value=0;
+    eval_vect.clear();
+    eval_vect.push_back(0);
+    for (i=1;i<nbslides;i++){
+        eval = eval_transition(i-1,i);
+        value+=eval;
+        eval_vect.push_back(eval);
+    }
+    evaluation = value;
+    return value;
+}
+
+int Sol::eval_slide(int idx){
+    int value = 0;
+    if (idx>0){
+        eval_vect[idx] = eval_transition(idx-1,idx);
+        value+=eval_vect[idx];
+    }
+    else
+        eval_vect[idx]=0;
+    value+=eval_vect[idx];
+    if (idx<nbslides-1){
+        eval_vect[idx+1] = eval_transition(idx,idx+1);
+        value+=eval_vect[idx+1];
+    }
+    return value;
 }
 
 void Sol::swap_slides(int idx1, int idx2){
     Slide tmp;
-    tmp = this->vsol[idx1];
-    this->vsol[idx1] = this->vsol[idx2];
-    this->vsol[idx2] = tmp;
+    evaluation -= eval_slide(idx1);
+    evaluation -= eval_slide(idx2);
+    tmp = vsol[idx1];
+    vsol[idx1] = vsol[idx2];
+    vsol[idx2] = tmp;
+    evaluation += eval_slide(idx1);
+    evaluation += eval_slide(idx2);
 }
 
 void Sol::swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2){
     int tmp;
+    evaluation -= eval_slide(idx1);
+    evaluation -= eval_slide(idx2);
     if(photo_idx1==1){
-        tmp = this->vsol[idx1].p1;
+        tmp = vsol[idx1].p1;
         if(photo_idx2==1){
-            this->vsol[idx1].p1 = this->vsol[idx2].p1;
-            this->vsol[idx2].p1 = tmp;
+            vsol[idx1].p1 = vsol[idx2].p1;
+            vsol[idx2].p1 = tmp;
         }else{
-            this->vsol[idx1].p1 = this->vsol[idx2].p2;
-            this->vsol[idx2].p2 = tmp;
+            vsol[idx1].p1 = vsol[idx2].p2;
+            vsol[idx2].p2 = tmp;
         }
     }else{
-        tmp = this->vsol[idx1].p2;
+        tmp = vsol[idx1].p2;
         if(photo_idx2==1){
-            this->vsol[idx1].p2 = this->vsol[idx2].p1;
-            this->vsol[idx2].p1 = tmp;
+            vsol[idx1].p2 = vsol[idx2].p1;
+            vsol[idx2].p1 = tmp;
         }else{
-            this->vsol[idx1].p2 = this->vsol[idx2].p2;
-            this->vsol[idx2].p2 = tmp;
+            vsol[idx1].p2 = vsol[idx2].p2;
+            vsol[idx2].p2 = tmp;
         }
     }
+    evaluation += eval_slide(idx1);
+    evaluation += eval_slide(idx2);
 }
 
 Sol * Sol::deep_copy(){
@@ -323,5 +385,7 @@ Sol * Sol::deep_copy(){
     sol->I = this->I;
     sol->nbslides = this->nbslides;
     sol->vsol = this->vsol;
+    sol->eval_vect = this->eval_vect;
+    sol->evaluation= this->evaluation;
     return sol;
 }

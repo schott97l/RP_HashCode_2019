@@ -6,7 +6,7 @@ Random::Random(){
 }
 
 Sol * Random::solve(){
-    int idx;
+    int idx,j;
     Slide hori_slide;
     hori_slide.p1=-1;
     hori_slide.p2=-1;
@@ -15,25 +15,35 @@ Sol * Random::solve(){
     verti_slide.p2=-1;
 
 
-    this->sol = new Sol;
-    this->sol->I = this->instance;
+    sol = new Sol;
+    sol->I = instance;
+    sol->vsol.clear();
+    sol->eval_vect.clear();
 
     vector<bool> mark;
-    mark.resize(this->instance->nbphot);
-    for (int i=0;i<this->instance->nbphot;i++){
+    mark.resize(instance->nbphot);
+    for (int i=0;i<instance->nbphot;i++){
         mark[i]=false;
     }
 
     srand(time(0));
+    j=0;
 
-    for (int i=0;i<this->instance->nbphot;i++){
-        idx = rand()%this->instance->nbphot;
-        while(mark[idx]==true)
-            idx++%this->instance->nbphot;
+    for (int i=0;i<instance->nbphot;i++){
+        idx = rand()%instance->nbphot;
+        while(mark[idx]==true){
+            idx++;
+            idx %= instance->nbphot;
+        }
         if(this->instance->V[idx].ori=='H'){
             hori_slide.p1 = idx;
             mark[idx]=true;
-            this->sol->vsol.push_back(hori_slide);
+            sol->vsol.push_back(hori_slide);
+            if (j==0)
+                sol->eval_vect.push_back(0);
+            else
+                sol->eval_vect.push_back(sol->eval_transition(j-1,j));
+            j++;
         }
         else if(this->instance->V[idx].ori=='V'){
             if(verti_slide.p1==-1){
@@ -42,13 +52,19 @@ Sol * Random::solve(){
             }else{
                 verti_slide.p2 = idx;
                 mark[idx]=true;
-                this->sol->vsol.push_back(verti_slide);
+                sol->vsol.push_back(verti_slide);
                 verti_slide.p1=-1;
                 verti_slide.p2=-1;
+                if (j==0)
+                    sol->eval_vect.push_back(0);
+                else
+                    sol->eval_vect.push_back(sol->eval_transition(j-1,j));
+                j++;
             }
         }
     }
 
-    this->sol->nbslides = this->sol->vsol.size();
-    return this->sol;
+    sol->nbslides = sol->vsol.size();
+    sol->eval();
+    return sol;
 }

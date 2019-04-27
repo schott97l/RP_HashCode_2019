@@ -18,6 +18,6 @@ void Solver::save(ostream &o){
     this->sol->aff(o);
 }
 
-double Solver::eval(){
+int Solver::eval(){
     return this->sol->eval();
 }

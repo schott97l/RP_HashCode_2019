@@ -7,56 +7,88 @@ Greedy::Greedy(int length){
 }
 
 Sol * Greedy::solve(){
+    int value;
 
-    this->sol = new Sol();
-    this->sol->I = this->instance;
-    vector<Slide> slides;
+    sol = new Sol();
+    sol->I = instance;
+    sol->vsol.clear();
+    sol->eval_vect.clear();
+    sol->evaluation=0;
+
     Slide slide;
     slide.p1=-1;
     slide.p2=-1;
 
     std::vector<bool> mark;
-    mark.resize(this->instance->nbphot);
-    for (int j=0;j<this->instance->nbphot;j++)
+    mark.resize(instance->nbphot);
+    for (int j=0;j<instance->nbphot;j++)
         mark[j]=false;
 
-    int i = 0;
-
     srand(time(0));
-    int idx = rand() % this->instance->nbphot;
+    int idx = rand() % instance->nbphot;
     mark[idx] = true;
     slide.p1=idx;
-    if (this->instance->V[idx].ori == 'H'){
-        slides.push_back(slide);
-        i++;
+    int i;
+
+
+    if (instance->V[idx].ori == 'H'){
+        sol->vsol.push_back(slide);
+        i=1;
     } else {
-        idx = this->instance->search_closerV(this->instance->V[idx].tags,mark,idx,this->length);
-        mark[idx] = true;
+        idx = instance->search_closerV(instance->V[idx].tags,mark,idx,length);
+        if (idx!=-1)
+            mark[idx] = true;
         slide.p2=idx;
-        slides.push_back(slide);
+        sol->vsol.push_back(slide);
         slide.p2=-1;
-        i++;
+        i=2;
     }
 
-    for(;i<this->instance->nbphot;i++){
-        idx = this->instance->search_closer(this->instance->V[idx].tags,mark,idx,this->length);
+    sol->eval_vect.push_back(0);
+    int j=1;
+
+    for(i;i<instance->nbphot;i++){
+        if (idx!=-1){
+            idx = instance->search_closer(instance->V[idx].tags,mark,idx,length);
+            if (idx==-1){
+                for (int j=0;j<instance->nbphot;j++){
+                    if(mark[j]==false){
+                        idx=j;
+                        break;
+                    }
+                }
+                if (j==instance->nbphot)
+                    break;
+            }
+        } else {
+            for (int j=0;j<instance->nbphot;j++){
+                if(mark[j]==false){
+                    idx=j;
+                    break;
+                }
+            }
+            if (j==instance->nbphot)
+                break;
+        }
         mark[idx] = true;
         slide.p1=idx;
-        i++;
-        if (this->instance->V[idx].ori == 'H'){
-            slides.push_back(slide);
+        if (instance->V[idx].ori == 'H'){
+            sol->vsol.push_back(slide);
         } else {
-            idx = this->instance->search_closerV(this->instance->V[idx].tags,mark,idx,this->length);
-            mark[idx] = true;
+            idx = instance->search_closerV(instance->V[idx].tags,mark,idx,length);
+            if (idx!=-1)
+                mark[idx] = true;
             slide.p2=idx;
-            slides.push_back(slide);
+            sol->vsol.push_back(slide);
             slide.p2=-1;
             i++;
         }
+        value = sol->eval_transition(j-1,j);
+        sol->eval_vect.push_back(value);
+        sol->evaluation += value;
+        j++;
     }
 
-    this->sol->vsol = slides;
-    this->sol->nbslides = this->sol->vsol.size();
-
-    return this->sol;
+    sol->nbslides = sol->vsol.size();
+    return sol;
 }

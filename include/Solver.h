@@ -23,7 +23,7 @@ class Solver{
         void load(Instance *instance, Sol *sol);
         virtual Sol * solve()=0;
         void save(ostream &o);
-        double eval();
+        int eval();
 };
 
 #endif

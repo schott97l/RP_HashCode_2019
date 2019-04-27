@@ -4,6 +4,7 @@
 #include"Hori_verti.h"
 #include"Naive_greedy.h"
 #include"Greedy.h"
+#include"Random.h"
 #include"Stoch_descent.h"
 #include"Genetic.h"
 #include"Ilp.h"
@@ -20,7 +21,7 @@ typedef struct {
 
 void usage(char * argv0){
     cerr<<"usage: "<<argv0<<" <solver instance percent solution> [options]"<<endl;
-    cerr<<"    Solver in [ hori_verti | naive_greedy | greedy | stoch_descent | genetic | ilp ]"<<endl;
+    cerr<<"    Solver in [ hori_verti | naive_greedy | greedy | random | stoch_descent | genetic | ilp ]"<<endl;
     cerr<<"    Instance file of the Google Hash Code PhotoSlideShow (*.txt)"<<endl;
     cerr<<"    Percent of the instance to be read"<<endl;
     cerr<<"    Output solution"<<endl;
@@ -56,20 +57,20 @@ args_t arg_parse(int argc, char * argv[]){
                 }
                 break;
             case 'i':
-                //length
+                //n iter
                 args.nb_iter = atoi(optarg);
-                if(args.length<0)
+                if(args.nb_iter<0)
                 {
                     fprintf(stderr,"invalide negative nb iter");
                     exit(EXIT_FAILURE);
                 }
                 break;
             case 'n':
-                //length
+                //nb neighbours
                 args.nb_neigh = atoi(optarg);
-                if(args.length<0)
+                if(args.nb_neigh<0)
                 {
-                    fprintf(stderr,"invalide negative nb neighbour");
+                    fprintf(stderr,"invalide negative nb neighbours");
                     exit(EXIT_FAILURE);
                 }
                 break;
@@ -135,6 +136,8 @@ int main(int argc, char **argv){
         solver = new Naive_greedy;
     else if (name_solver.compare("greedy") == 0)
         solver = new Greedy(args.length);
+    else if (name_solver.compare("random") == 0)
+        solver = new Random();
     else if (name_solver.compare("stoch_descent") == 0)
     {
         if (args.input_sol.compare("")!=0)
@@ -143,7 +146,7 @@ int main(int argc, char **argv){
             solver = new Stoch_descent(args.nb_iter, args.nb_neigh, args.length);
     }
     else if (name_solver.compare("genetic") == 0)
-        solver = new Genetic(args.nb_iter,args.nb_neigh);
+        solver = new Genetic(args.nb_iter,args.nb_neigh,args.length);
     else if (name_solver.compare("ilp") == 0)
         solver = new Ilp;
     else
