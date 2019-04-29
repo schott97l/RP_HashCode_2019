@@ -8,6 +8,7 @@
 #include"Stoch_descent.h"
 #include"Genetic.h"
 #include"Ilp.h"
+#include"gurobi_c++.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ typedef struct {
     int nb_iter;
     int nb_neigh;
     string input_sol;
+    string subtour;
 } args_t;
 
 void usage(char * argv0){
@@ -34,12 +36,13 @@ args_t arg_parse(int argc, char * argv[]){
     args.help = false;
     args.length = 1000;
     args.input_sol = "";
+    args.subtour = "flow";
     args.nb_iter = 100;
     args.nb_neigh = 100;
     int c_arg;
     extern char *optarg;
     extern int optind;
-    while( (c_arg = getopt(argc, argv, "hl:i:n:s:")) != EOF )
+    while( (c_arg = getopt(argc, argv, "hl:i:n:s:f:")) != EOF )
     {
         switch(c_arg)
         {
@@ -78,6 +81,11 @@ args_t arg_parse(int argc, char * argv[]){
                 //input solution
                 args.input_sol=optarg;
                 break;
+            case 'f':
+                //input solution
+                args.subtour=optarg;
+                break;
+
             case '?':
                 break;
             default:
@@ -148,7 +156,7 @@ int main(int argc, char **argv){
     else if (name_solver.compare("genetic") == 0)
         solver = new Genetic(args.nb_iter,args.nb_neigh,args.length);
     else if (name_solver.compare("ilp") == 0)
-        solver = new Ilp;
+        solver = new Ilp(args.subtour);
     else
         solver = new Hori_verti;
 

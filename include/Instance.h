@@ -8,6 +8,11 @@
 
 using namespace std;
 
+void aff_list(list<string>&l);
+int min(int a, int b, int c);
+int eval_slide(const list<string> &l1, const list<string> &l2);
+void concat_sorted_without_double(const list<string>&l1,const list<string>&l2,list<string>&l);
+
 class Photo{
     public:
         char ori;
