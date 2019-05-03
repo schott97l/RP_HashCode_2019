@@ -3,3 +3,6 @@ bin/*
 obj/*
 instances/*
 solutions/*
+*.csv
+*.png
+vgcore*

@@ -1,15 +1,15 @@
-#ifndef __ILP_H__
-#define __ILP_H__
+#ifndef __ROUND_H__
+#define __ROUND_H__
 
 #include"Solver.h"
 #include"gurobi_c++.h"
 
-class Ilp : public Solver{
+class Round : public Solver{
     public:
         string subtour;
         int timelimit;
 
-        Ilp(string subtour, int timelimit);
+        Round(string subtour, int timelimit);
         Sol * solve();
 };
 

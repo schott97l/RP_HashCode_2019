@@ -1,8 +1,11 @@
 #ifndef __SOLVER_H__
 #define __SOLVER_H__
 
+#include<unistd.h>
+#include<limits>
 #include<iostream>
 #include<fstream>
+#include <sstream>
 #include<string>
 #include<list>
 #include<vector>
@@ -10,8 +13,11 @@
 #include<cmath>
 #include<tuple>
 #include<algorithm>
+#include<ctime>
+#include <cassert>
 #include"Instance.h"
 
+string itos(int i);
 
 class Solver{
     public:

@@ -10,16 +10,16 @@ CC = g++
 CFLAGS = -g -pthread -ldl -w -o3 -std=gnu++11
 O_REP = obj/
 B_REP = bin/
-GRBPATH = /opt/gurobi811/linux64
-INC = -I include -I$(GRBPATH)/include
-LIBRARIES = -L$(GRBPATH)/lib -lgurobi_c++ -lgurobi81
+GUROBI_PATH = $(GUROBI_HOME)
+INC = -I include -I$(GUROBI_PATH)/include
+LIBRARIES = -L$(GUROBI_PATH)/lib -lgurobi_c++ -lgurobi81
 
 all: rep Slideshow
 
 rep:
 	if [ ! -d obj ]; then  mkdir obj; fi; if [ ! -d bin ]; then mkdir bin; fi;
 
-Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o Random.o Stoch_descent.o Genetic.o Ilp.o #Round.o
+Slideshow: Slideshow.o Instance.o Solver.o Hori_verti.o Naive_greedy.o Greedy.o Random.o Stoch_descent.o Annealing.o Genetic.o Ilp.o Round.o
 	$(CC) $(patsubst %,$(O_REP)%,$^) $(CFLAGS) $(INC) $(LIBRARIES) -o $(B_REP)$@
 
 obj/%.o: sources/%.S

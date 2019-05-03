@@ -171,6 +171,9 @@ int Instance::search_closer(list<string>&l, vector<bool> &mark, int start, int l
         }
         idx++;
     }
+    if(maxi!=-1)
+        if (V[maxi].ori=='V')
+            maxi=-1;
     return maxi;
 }
 
@@ -205,6 +208,9 @@ int Instance::search_closerV(list<string>&l, vector<bool> &mark, int start, int 
         }
         idx++;
     }
+    if(maxi!=-1)
+        if (V[maxi].ori=='H')
+            maxi=-1;
     return maxi;
 }
 
@@ -326,37 +332,32 @@ int Sol::eval(){
     return value;
 }
 
-int Sol::eval_slide(int idx){
-    int value = 0;
+void Sol::eval_slide(int idx){
     if (idx>0){
+        evaluation -= eval_vect[idx];
         eval_vect[idx] = eval_transition(idx-1,idx);
-        value+=eval_vect[idx];
+        evaluation += eval_vect[idx];
     }
     else
         eval_vect[idx]=0;
-    value+=eval_vect[idx];
     if (idx<nbslides-1){
+        evaluation -= eval_vect[idx+1];
         eval_vect[idx+1] = eval_transition(idx,idx+1);
-        value+=eval_vect[idx+1];
+        evaluation += eval_vect[idx+1];
     }
-    return value;
 }
 
 void Sol::swap_slides(int idx1, int idx2){
     Slide tmp;
-    evaluation -= eval_slide(idx1);
-    evaluation -= eval_slide(idx2);
     tmp = vsol[idx1];
     vsol[idx1] = vsol[idx2];
     vsol[idx2] = tmp;
-    evaluation += eval_slide(idx1);
-    evaluation += eval_slide(idx2);
+    eval_slide(idx1);
+    eval_slide(idx2);
 }
 
 void Sol::swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2){
     int tmp;
-    evaluation -= eval_slide(idx1);
-    evaluation -= eval_slide(idx2);
     if(photo_idx1==1){
         tmp = vsol[idx1].p1;
         if(photo_idx2==1){
@@ -376,8 +377,8 @@ void Sol::swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2){
             vsol[idx2].p2 = tmp;
         }
     }
-    evaluation += eval_slide(idx1);
-    evaluation += eval_slide(idx2);
+    eval_slide(idx1);
+    eval_slide(idx2);
 }
 
 Sol * Sol::deep_copy(){
@@ -388,4 +389,19 @@ Sol * Sol::deep_copy(){
     sol->eval_vect = this->eval_vect;
     sol->evaluation= this->evaluation;
     return sol;
+}
+
+bool is_file_exist(const char *fileName)
+{
+    std::ifstream infile(fileName);
+    auto res = infile.good();
+    infile.close();
+    return res;
+}
+
+double randfrom(double min, double max)
+{
+    double range = (max - min);
+    double div = RAND_MAX / range;
+    return min + (rand() / div);
 }

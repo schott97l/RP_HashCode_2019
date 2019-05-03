@@ -3,6 +3,7 @@
 using namespace std;
 
 Random::Random(){
+    srand(time(0));
 }
 
 Sol * Random::solve(){
@@ -13,12 +14,14 @@ Sol * Random::solve(){
     Slide verti_slide;
     verti_slide.p1=-1;
     verti_slide.p2=-1;
+    int eval;
 
 
     sol = new Sol;
     sol->I = instance;
     sol->vsol.clear();
     sol->eval_vect.clear();
+    sol->evaluation=0;
 
     vector<bool> mark;
     mark.resize(instance->nbphot);
@@ -26,7 +29,6 @@ Sol * Random::solve(){
         mark[i]=false;
     }
 
-    srand(time(0));
     j=0;
 
     for (int i=0;i<instance->nbphot;i++){
@@ -41,8 +43,11 @@ Sol * Random::solve(){
             sol->vsol.push_back(hori_slide);
             if (j==0)
                 sol->eval_vect.push_back(0);
-            else
-                sol->eval_vect.push_back(sol->eval_transition(j-1,j));
+            else{
+                eval = sol->eval_transition(j-1,j);
+                sol->eval_vect.push_back(eval);
+                sol->evaluation+=eval;
+            }
             j++;
         }
         else if(this->instance->V[idx].ori=='V'){
@@ -57,8 +62,11 @@ Sol * Random::solve(){
                 verti_slide.p2=-1;
                 if (j==0)
                     sol->eval_vect.push_back(0);
-                else
-                    sol->eval_vect.push_back(sol->eval_transition(j-1,j));
+                else{
+                    eval = sol->eval_transition(j-1,j);
+                    sol->eval_vect.push_back(eval);
+                    sol->evaluation+=eval;
+                }
                 j++;
             }
         }

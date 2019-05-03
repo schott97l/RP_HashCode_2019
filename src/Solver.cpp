@@ -5,6 +5,8 @@ using namespace std;
 Solver::Solver(){
 }
 
+string itos(int i) {stringstream s; s << i; return s.str(); }
+
 void Solver::load(Instance * instance){
     this->instance = instance;
 }

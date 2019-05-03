@@ -8,6 +8,8 @@ Greedy::Greedy(int length){
 
 Sol * Greedy::solve(){
     int value;
+    bool done;
+    int idx_pred;
 
     sol = new Sol();
     sol->I = instance;
@@ -48,6 +50,7 @@ Sol * Greedy::solve(){
     int j=1;
 
     for(i;i<instance->nbphot;i++){
+        done=false;
         if (idx!=-1){
             idx = instance->search_closer(instance->V[idx].tags,mark,idx,length);
             if (idx==-1){
@@ -57,8 +60,6 @@ Sol * Greedy::solve(){
                         break;
                     }
                 }
-                if (j==instance->nbphot)
-                    break;
             }
         } else {
             for (int j=0;j<instance->nbphot;j++){
@@ -70,25 +71,44 @@ Sol * Greedy::solve(){
             if (j==instance->nbphot)
                 break;
         }
-        mark[idx] = true;
         slide.p1=idx;
         if (instance->V[idx].ori == 'H'){
+            mark[idx] = true;
             sol->vsol.push_back(slide);
+            done = true;
         } else {
+            idx_pred = idx;
+            mark[idx_pred] = true;
             idx = instance->search_closerV(instance->V[idx].tags,mark,idx,length);
             if (idx!=-1)
+            {
                 mark[idx] = true;
-            slide.p2=idx;
-            sol->vsol.push_back(slide);
-            slide.p2=-1;
-            i++;
+                slide.p2=idx;
+                sol->vsol.push_back(slide);
+                slide.p2=-1;
+                i++;
+                done = true;
+            }else
+                mark[idx_pred] = false;
         }
-        value = sol->eval_transition(j-1,j);
-        sol->eval_vect.push_back(value);
-        sol->evaluation += value;
-        j++;
+        if (done)
+        {
+            value = sol->eval_transition(j-1,j);
+            sol->eval_vect.push_back(value);
+            sol->evaluation += value;
+            j++;
+        }
     }
 
     sol->nbslides = sol->vsol.size();
+    sol->eval();
+
+    if (is_file_exist("greedy_evals.csv")){
+        ofstream outfile;
+        outfile.open("greedy_evals.csv", std::ios_base::app);
+        if (!outfile.fail())
+            outfile << length << "," << sol->evaluation << endl;
+    }
+
     return sol;
 }

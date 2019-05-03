@@ -12,6 +12,8 @@ void aff_list(list<string>&l);
 int min(int a, int b, int c);
 int eval_slide(const list<string> &l1, const list<string> &l2);
 void concat_sorted_without_double(const list<string>&l1,const list<string>&l2,list<string>&l);
+bool is_file_exist(const char *fileName);
+double randfrom(double min, double max);
 
 class Photo{
     public:
@@ -53,11 +55,10 @@ class Sol{
         void aff(ostream &o);
         int eval();
         int eval_transition(int idx1, int idx2);
-        int eval_slide(int idx);
+        void eval_slide(int idx);
         void swap_slides(int idx1,int idx2);
         void swap_verticals(int idx1, int photo_idx1, int idx2, int photo_idx2);
         Sol * deep_copy();
-
 };
 
 

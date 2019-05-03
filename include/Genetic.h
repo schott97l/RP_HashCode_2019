@@ -10,15 +10,17 @@ class Genetic : public Solver{
         int nb_generation;
         int population_size;
         int length;
+        int timelimit;
         vector<Sol*> population;
-        vector<double> evals;
 
-        Genetic(int nb_generation, int population_size, int length);
+        Genetic(int nb_generation, int population_size, int timelimit);
         Sol * solve();
-        Sol * select(vector<Sol*> population, vector<double> evals);
+        Sol * select();
         Sol * cross_over(Sol * parent_A, Sol * parent_B);
         Sol * mutation(Sol * solution);
-        vector<double> softmax(vector<double> evals);
+        vector<double> softmax();
+        Sol * swap_slides_neighbour(Sol * solution, int idx1);
+        Sol * swap_verticals_neighbour(Sol * solution, int idx1, int photo_idx1);
 };
 
 #endif
