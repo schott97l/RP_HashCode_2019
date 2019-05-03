@@ -7,6 +7,8 @@ Naive_greedy::Naive_greedy(){
 
 Sol * Naive_greedy::solve(){
     int value;
+    bool done;
+    int idx_pred;
 
     sol = new Sol();
     sol->I = instance;
@@ -34,7 +36,8 @@ Sol * Naive_greedy::solve(){
         i=1;
     } else {
         idx = instance->search_closerV(instance->V[idx].tags,mark);
-        mark[idx] = true;
+        if (idx!=-1)
+            mark[idx] = true;
         slide.p2=idx;
         sol->vsol.push_back(slide);
         slide.p2=-1;
@@ -45,23 +48,54 @@ Sol * Naive_greedy::solve(){
     int j=1;
 
     for(i;i<instance->nbphot;i++){
-        idx = instance->search_closer(instance->V[idx].tags,mark);
-        mark[idx] = true;
+        done=false;
+        if (idx!=-1){
+            idx = instance->search_closer(instance->V[idx].tags,mark);
+            if (idx==-1){
+                for (int j=0;j<instance->nbphot;j++){
+                    if(mark[j]==false){
+                        idx=j;
+                        break;
+                    }
+                }
+            }
+        } else {
+            for (int j=0;j<instance->nbphot;j++){
+                if(mark[j]==false){
+                    idx=j;
+                    break;
+                }
+            }
+            if (j==instance->nbphot)
+                break;
+        }
         slide.p1=idx;
         if (instance->V[idx].ori == 'H'){
-            sol->vsol.push_back(slide);
-        } else {
-            idx = instance->search_closerV(instance->V[idx].tags,mark);
             mark[idx] = true;
-            slide.p2=idx;
             sol->vsol.push_back(slide);
-            slide.p2=-1;
-            i++;
+            done = true;
+        } else {
+            idx_pred = idx;
+            mark[idx_pred] = true;
+            idx = instance->search_closerV(instance->V[idx].tags,mark);
+            if (idx!=-1)
+            {
+                mark[idx] = true;
+                slide.p2=idx;
+                sol->vsol.push_back(slide);
+                slide.p2=-1;
+                i++;
+                done = true;
+            }else
+                mark[idx_pred] = false;
         }
-        value = sol->eval_transition(j-1,j);
-        sol->eval_vect.push_back(value);
-        sol->evaluation += value;
-        j++;
+        if (done)
+        {
+            value = sol->eval_transition(j-1,j);
+            sol->eval_vect.push_back(value);
+            sol->evaluation += value;
+            j++;
+        }
     }
 
     sol->nbslides = sol->vsol.size();
